@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Hello-World-web-app-image
+  labels:
+    app: Hello-World-web-app-image
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: Hello-World-web-app-image
+  template:
+    metadata:
+      labels:
+        app: Hello-World-web-app-image
+    spec:
+      containers:
+        - name: Hello-World-web-app-image
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/Hello-World-web-app-image:latest
+          ports:
+            - containerPort: 5000
