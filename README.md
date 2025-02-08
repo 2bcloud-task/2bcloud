@@ -26,28 +26,26 @@ Steps Overview:
 1.1 Setup Terraform Backend
 It's best practice to store the Terraform state file in Amazon S3 with DynamoDB locking to prevent conflicts.
 
-S3_Bucket_for_State_File.hcl
-
-Terraform_Backend_Configuration.hcl
+S3_Bucket_for_State_File.tf
+Terraform_Backend_Configuration.tf
 
 Note: check and confirm the region
 
 1.2 VPC and Subnets
 Create a VPC, private/public subnets, and an internet gateway.
 
-VPC_and_Subnets.hcl
+VPC_and_Subnets.tf
 
 1.3 Deploy EKS Cluster with a Single Node Pool
 Use the EKS module to deploy a cluster with a single managed node group.
 
-Deploy_EKS_Cluster_with_a_Single_Node_Pool.hcl
+Deploy_EKS_Cluster_with_a_Single_Node_Pool.tf
 
 1.4 Deploy a Kubernetes Service with Load Balancer
 Use Terraform to deploy an Nginx deployment with a LoadBalancer service.
 
-Nginx_deployment.hcl
-
-LoadBalancer_Service.hcl
+Nginx_deployment.tf
+LoadBalancer_Service.tf
 
 1.5 Configure Access via Load Balancer
 After applying Terraform, run:
@@ -102,6 +100,7 @@ Verify the image is built:
 verify_image.sh
 
 Local container testing:
+
 Run the Container Locally
 
 run_container.sh
@@ -127,6 +126,7 @@ Note: check and confirm the region
 create_ECR_repo.sh
 
 3.3.3 Tag the Docker Image
+
 Find your ECR repository URL and tag the image:
 
 tag_docker_image.sh
@@ -176,11 +176,9 @@ kubectl get svc
 
 Get the external IP from the service:
 
-kubectl get svc my-python-app
+kubectl get svc Hello-World-web-app-image
 
-and try to connect to url
-
-http://<EXTERNAL-IP>/
+and try to connect to url http://<EXTERNAL-IP>/
 
 
 6. Documentation & Verification
