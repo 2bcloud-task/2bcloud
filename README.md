@@ -140,14 +140,60 @@ push_image_to_ECR.sh
 - Create a GitHub Actions pipeline that automates:
 -- Building the Docker image from the application source code.
 -- Pushing the image to the container registry.
--- Deploying the application to the Kubernetes cluster using Kubernetes manifests or Helm charts.
+-- Deploying the application to the Kubernetes cluster using Kubernetes manifests.
+
+Note: Before setting up the pipeline, make sure GitHub repository secrets configured:
+* AWS_ACCESS_KEY_ID
+* AWS_SECRET_ACCESS_KEY
+* AWS_REGION (e.g., us-east-1)
+* EKS_CLUSTER_NAME
+
+4.1 Create the GitHub Actions Workflow
+
+Create .github/workflows/deploy.yml in the repository
+
+.github/workflows/deploy.yml
+
+Create Kubernetes Manifests k8s/deployment.yaml and k8s/service.yaml in the repository
+
+k8s/deployment.yaml
+k8s/service.yaml
+
+Note: If GitHub secrets defined (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) the commit of GitHub Action workflow yaml-files triggered GitHub Action automaticaly
+
+
 5. Application Verification
 - Verify that the application was successfully deployed using the CI/CD pipeline.
 - Ensure the application is accessible via a public URL by performing a manual test.
 - Document any issues or adjustments made during this step.
+
+Vereifying deployment
+
+After the pipeline completes, check if the application is running:
+
+kubectl get pods
+kubectl get svc
+
+Get the external IP from the service:
+
+kubectl get svc my-python-app
+
+and try to connect to url
+
+http://<EXTERNAL-IP>/
+
+
 6. Documentation & Verification
 - Document your setup and approach in a `README.md` file. Include:
 -- Steps to provision the infrastructure.
 -- Steps to run the CI/CD pipeline.
 -- Verification steps to ensure the application is accessible.
 - Provide any commands or scripts used in the process.
+
+All commands and scripts described inline and commited in the repository.
+
+Note: 
+The EXTERNAL-IP should be reachable after some delay because Load Balancer that takes a time to take effect.
+For faster allocation the following annotation can be added into k8s/service.yaml : 
+
+service.beta.kubernetes.io/aws-load-balancer-type: nlb
