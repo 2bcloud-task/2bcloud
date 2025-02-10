@@ -187,3 +187,83 @@ The EXTERNAL-IP should be reachable after some delay because Load Balancer that 
 For faster allocation the following annotation can be added into k8s/service.yaml : 
 
 service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+
+(Optional)
+- Implement a Horizontal Pod Autoscaler (HPA) for the application and test its functionality.
+- Use a benchmarking tool (e.g., Apache Bench) to simulate load and validate the HPA setup.
+
+Adding an HPA (Horizontal Pod Autoscaler) allows the application to scale based on CPU or memory usage.
+HPA requires metrics-server to collect CPU/memory usage.
+
+Installing HPA on EKS cluster:
+
+install_hpa.sh
+
+Verify installation:
+
+verify_hpa_installing.sh
+
+Expected output:
+
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+metrics-server   1/1     1            1           1m
+
+Define HPA for the application Hello-World-web-app-image
+
+hpa.yaml
+
+Note:
+minReplicas: Minimum number of pods.
+maxReplicas: Maximum number of pods.
+averageUtilization: If CPU usage goes above 50%, the app scales up.
+
+Apply the hpa
+
+apply_hpa.sh
+
+Verify HPA running
+
+verify_hpa_running.sh
+
+Expected output:
+
+NAME                             REFERENCE                              TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+Hello-World-web-app-image-hpa    Deployment/Hello-World-web-app-image   10%/50%    1         5         1          1m
+
+Load Testing with Apache Bench (ab)
+Use Apache Bench (ab) to generate load and trigger auto-scaling.
+
+Install Apache Bench (e.g. on Ubuntu)
+
+install_ab.sh
+
+Run Load Test for EXTERNAL-IP by simulation 1000 requests with 50 concurrent users:
+
+load_test.sh
+
+Note: 
+Check and update EXTERNAL-IP using: 
+kubectl get svc Hello-World-web-app-image
+
+Monitor Scaling
+
+Check if HPA scales up:
+
+verify_hpa_running.sh
+
+Expected output (after load):
+
+NAME                             REFERENCE                              TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+Hello-World-web-app-image-hpa    Deployment/Hello-World-web-app-image   60%/50%    1         5         3          2m
+
+Check running pods:
+
+verify_pods.sh
+
+Expected output (more pods running):
+
+NAME                                            READY   STATUS    RESTARTS   AGE
+Hello-World-web-app-image-7df5d9c5d4-xyz123     1/1     Running   0          5m
+Hello-World-web-app-image-7df5d9c5d4-abc456     1/1     Running   0          1m
+Hello-World-web-app-image-7df5d9c5d4-def789     1/1     Running   0          1m
